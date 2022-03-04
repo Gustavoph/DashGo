@@ -1,15 +1,15 @@
-import * as C from '@chakra-ui/react'
+import { FormControl, FormLabel, InputProps as ChakraInputProps } from '@chakra-ui/react'
 
-interface InputProps extends C.InputProps {
+interface InputProps extends ChakraInputProps {
   name: string;
   label?: string;
 }
 
 export function Input({ name, label, ...rest }: InputProps) {
   return (
-    <C.FormControl>
-      {!!label && <C.FormLabel htmlFor={name}>{label}</C.FormLabel>}
-      <C.Input
+    <FormControl>
+      {!!label && <FormLabel htmlFor={name}>{label}</FormLabel>}
+      <Input
         id={name}
         name={name}
         variant="filled"
@@ -19,6 +19,6 @@ export function Input({ name, label, ...rest }: InputProps) {
         size="lg"
         {...rest}
       />
-    </C.FormControl>
+    </FormControl>
   )
 }

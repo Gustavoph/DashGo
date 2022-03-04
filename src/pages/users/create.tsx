@@ -1,14 +1,15 @@
-import * as C from '@chakra-ui/react'
-import { Input } from '../../components/Form/Input'
+import Link from 'next/link'
 import { Header } from '../../components/Header'
 import { Sidebar } from '../../components/Sidebar'
+import { Input } from '../../components/Form/Input'
+import { Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, VStack } from '@chakra-ui/react'
 
 export default function CreateUser() {
   return (
-    <C.Box>
+    <Box>
       <Header />
 
-      <C.Flex
+      <Flex
         px="6"
         my="6"
         w="100%"
@@ -17,31 +18,33 @@ export default function CreateUser() {
       >
         <Sidebar />
 
-        <C.Box flex="1" borderRadius={8} bg="gray.800" p="8">
-          <C.Heading size="lg" fontWeight="normal">Criar Usuário</C.Heading>
+        <Box flex="1" borderRadius={8} bg="gray.800" p={["6", "8"]}>
+          <Heading size="lg" fontWeight="normal">Criar Usuário</Heading>
 
-          <C.Divider my="6" borderColor="gray.700"/>
+          <Divider my="6" borderColor="gray.700"/>
 
-          <C.VStack spacing="8">
-            <C.SimpleGrid minChildWidth="240px" spacing="8" w="100%">
+          <VStack spacing="8">
+            <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
               <Input name="name" label="Nome Completo" />
               <Input name="email" type="email" label="E-mail" />
-            </C.SimpleGrid>
+            </SimpleGrid>
 
-            <C.SimpleGrid minChildWidth="240px" spacing="8" w="100%">
+            <SimpleGrid minChildWidth="240px" spacing={["6", "8"]} w="100%">
               <Input name="password" type="password" label="Senha" />
               <Input name="password_confirmation" type="password" label="Confirmar Senha" />
-            </C.SimpleGrid>
-          </C.VStack>
+            </SimpleGrid>
+          </VStack>
 
-          <C.Flex mt="8" justify="flex-end">
-            <C.HStack spacing="4">
-              <C.Button colorScheme="whiteAlpha">Cancelar</C.Button>
-              <C.Button colorScheme="pink">Salvar</C.Button>
-            </C.HStack>
-          </C.Flex>
-        </C.Box>
-      </C.Flex>
-    </C.Box>
+          <Flex mt="8" justify="flex-end">
+            <HStack spacing="4">
+              <Link href="/users" passHref>
+                <Button colorScheme="whiteAlpha">Cancelar</Button>
+              </Link>
+              <Button colorScheme="pink">Salvar</Button>
+            </HStack>
+          </Flex>
+        </Box>
+      </Flex>
+    </Box>
   )
 }
