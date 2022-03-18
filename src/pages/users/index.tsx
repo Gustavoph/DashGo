@@ -1,11 +1,14 @@
-import Link from 'next/link'
-import { useQuery } from 'react-query'
+import NextLink from 'next/link'
 import { RiAddLine, RiPencilLine } from 'react-icons/ri'
-import { Box, Button, Checkbox, Flex, Heading, Icon, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useBreakpointValue } from '@chakra-ui/react'
+import { Box, Button, Checkbox, Flex, Heading, Icon, Link, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useBreakpointValue } from '@chakra-ui/react'
 
 import { Header } from '../../components/Header'
 import { Sidebar } from '../../components/Sidebar'
 import { Pagination } from '../../components/Pagination'
+import { useUsers } from '../../services/hooks/useUsers'
+import { useState } from 'react'
+import { queryClient } from '../../services/queryClient'
+import { api } from '../../services/api'
 
 export default function UserList() {
   const isWideVersion = useBreakpointValue({
@@ -13,24 +16,18 @@ export default function UserList() {
     lg: true
   })
 
-  const { data, isLoading, error } = useQuery('users', async () => {
-    const response = await fetch('http://localhost:3000/api/users')
-    const data = await response.json()
+  
+  const [page, setPage] = useState(1)
+  
+  const { data, isLoading, error, isFetching } = useUsers(page)
 
-    const users = data.users.map(user => {
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        createdAt: new Date(user.createdAt).toLocaleDateString('pt-BR', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        })
-      }
+  async function handlePrefetchUser(userId: number) {
+    await queryClient.prefetchQuery(['user', userId], async () => {
+      const response = await api.get(`users/${userId}`)
+
+      return response.data
     })
-    return users;
-  })
+  }
 
   return (
     <Box>
@@ -47,8 +44,11 @@ export default function UserList() {
 
         <Box flex="1" borderRadius={8} bg="gray.800" p="8">
           <Flex mb="8" justify="space-between" align="center">
-            <Heading size="lg" fontWeight="normal">Usuários</Heading>
-            <Link href="/users/create" passHref>
+            <Heading size="lg" fontWeight="normal">
+              Usuários
+              { !isLoading && isFetching && <Spinner size="sm" color="gray.500" ml="2"/> }
+            </Heading>
+            <NextLink href="/users/create" passHref>
               <Button
                 as="a"
                 size='sm'
@@ -58,7 +58,7 @@ export default function UserList() {
               >
                 Criar novo
               </Button>
-            </Link>
+            </NextLink>
           </Flex>
 
           { isLoading ? (
@@ -84,7 +84,7 @@ export default function UserList() {
                 </Thead>
 
                 <Tbody>
-                  { data.map(user => {
+                  { data.users.map(user => {
                     return (
                       <Tr key={ user.id }>
                         <Td px={["4", "4", "6"]}>
@@ -92,9 +92,11 @@ export default function UserList() {
                         </Td>
                         <Td>
                           <Box>
-                            <Text fontWeight="bold">
-                              { user.name }
-                            </Text>
+                            <Link color="purple.400" onMouseEnter={() => handlePrefetchUser(user.id)}>
+                              <Text fontWeight="bold">
+                                { user.name }
+                              </Text>
+                            </Link>
                             <Text fontSize="sm" color="gray.300">
                             { user.email }
                             </Text>
@@ -119,11 +121,14 @@ export default function UserList() {
                   })}
                 </Tbody>
               </Table>
+
+              <Pagination 
+                totalCountOfRegister={data.totalCount}
+                currentPage={page}
+                onPageChange={setPage}
+              />
             </>
           )}
-
-
-          <Pagination />
         </Box>
       </Flex>
     </Box>
